@@ -40,7 +40,7 @@ B = ZoomImagem(start, windowHeight, windowWidth, zoomHeight, zoomWidth, sourceHe
 C = ZoomImagem(start, windowHeight, windowWidth, zoomHeight, zoomWidth, sourceHeight, sourceWidth, conection3)
 
 # False coloring and visualization of the result
-pauliRGBeq = DecomposicaoPauli(A, B, C, zoomHeight, zoomWidth)
+pauliRGBeq = PauliDecompositon(A, B, C, zoomHeight, zoomWidth)
 ImageView.view(pauliRGBeq)
 
 # Add of noise and visualization
@@ -48,5 +48,5 @@ noisy = SaltPepperNoise(pauliRGBeq, zoomWidth, zoomHeight)
 ImageView.view(noisy)
 
 # Filtering and visualization
-pauliRGBeqMean = MeanFilterPolSAR(noisy, zoomWidth, zoomHeight)
+pauliRGBeqMean = MeanFilter(noisy, zoomWidth, zoomHeight)
 ImageView.view(pauliRGBeqMean)
