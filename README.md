@@ -5,11 +5,11 @@ takes a starting pixel, variable start, from the source file. The file ia a bina
 reference or connection to a file with dimentions specified in the .ann file, variables sourceHeight and sourceWidth. 
 Then it builds an image with zoomHeight and zoomWidth into a window with dimentions windowHeight and windowWidth.
 
-** ZoomImage
+## ZoomImage
 This programm takes a starting pixel (start) from the source data (a conection to a file with sourceHeight and sourceWidth) and 
 builds an image (which has zoomHeight and zoomWidth) into a window (with dimentions windowHeight and windowWidth).
 
-** Scrip
+## Scrip
 The file `ZoomScript.jl` contains the set up of the environment to visualize the PolSAR image and the desired zoomed area.
 Following is the script explanation:
 
