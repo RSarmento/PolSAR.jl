@@ -6,6 +6,7 @@ PolSAR images are generally huge (small ones are 11858 X 3300), and normally can
 is to summarize the full image into a smaller one. ZoomImage takes a starting pixel and creates a summarized or complete image from the given coordinates.
 
 ## Usage
+
 The file `ZoomScript.jl` contains the set up of the environment to visualize the PolSAR image and the desired zoomed area.
 Following is the script explanation:
 
@@ -18,6 +19,7 @@ using ImageView, StatsBase
 ```
 
 * Connections
+
 In the same folder as the code and images are stored, we create the connections (reference) to each one of the image bands.
 
 ```Julia
@@ -37,6 +39,7 @@ include("MeanFilter.jl")
 ```
 
 * Variables
+
 Start is the initial pixel of the forming image, sourceHeight and sourceWidth are the dimentions of the original image (as described in the .ann, annotation file). The windowHeight and windowWidth variables are the window dimentions. Lastly, zoomHeight and zoomWidth are the zoomed area's dimentions.
 
 ```Julia
@@ -50,6 +53,7 @@ zoomWidth	= 1650
 ```
 
 * Image Bands
+
 A, B and C are auxiliars for each image band
 
 ```Julia
@@ -59,6 +63,7 @@ C = ZoomImagem(start, windowHeight, windowWidth, zoomHeight, zoomWidth, sourceHe
 ```
 
 * False coloring
+
 False coloring and visualization of the result
 
 ```Julia
@@ -77,6 +82,7 @@ ImageView.view(pauliRGBeqMean)
 
 
 ## ZoomImage
+
 This programm takes a starting pixel (start) from the source data (a conection to a file with sourceHeight and sourceWidth) and builds an image (which has zoomHeight and zoomWidth) into a window (with dimentions windowHeight and windowWidth).
 
 * Setting constants
