@@ -5,32 +5,7 @@ The propose of this project is to enable PolSAR images to be visualized and mani
 PolSAR images are generally huge (small ones are 11858 X 3300), and normally can't be fully loaded. The approach here
 is to summarize the full image into a smaller one. ZoomImage takes a starting pixel and creates a summarized or complete image from the given coordinates.
 
-## ZoomImage
-This programm takes a starting pixel (start) from the source data (a conection to a file with sourceHeight and sourceWidth) and builds an image (which has zoomHeight and zoomWidth) into a window (with dimentions windowHeight and windowWidth).
-
-* Setting constants
-
-The array in which it is going to be stored needs an index value different from the i or j values form the loops. The source file is a binary complex vector with 16 bytes per pixel (8 for the real part, 8 for the imaginary part) with no header bits, and so start is multiplied by 8 in order to skip pixels accordingly. The windowHeight and windowWidth values are trunced in order to avoid non integer values (unnaccepted by the functions that use those variables), and a vector is created with the desired dimentions. As there is not a matrix data type in Julia later it is going to be reshaped into a matrix.
-
-* Setting pointers
-
-The position of the last pickable pixel in the line is accessed, then the conection is reset to 0 (the beginning) and later to the desired beginning of the upcomming image, then it is skiped to it's width (remember that each pixel is 8 bits), then saved for further use and finally reset to 0.
-
-* Setting pace
-
-Calculates the proportion in which the rows and columns pixels are skiped. Back is needed because each access in the source file pixels automatically moves the pointer.
-
-* First line
-
-The order in which the pixels are accessed is important. The last access can't be followed by a skip(conection, 8*widthPace), the reason being is that the automatical skip when the position is accessed in the source file is not accounted in the pace calculation.
-
-* Remaining lines
-
-After the first line is read, probably there are n != widthPace, making the continuous pace place the new line before or after it should begin to be alligned. To correct that, the moduloPosition is calculated using the modulo operation to find where the pointer is at in relation with the windowWidth, then the skipAux is calculated, taking in consideration also the heightPace, the pointer is moved, and the new line can begin alligned with the first.
-
-Now that the first line is done and the number of pixels to skip in the end of every line is known the rest of the image can be done.
-
-## Scrip
+## Usage
 The file `ZoomScript.jl` contains the set up of the environment to visualize the PolSAR image and the desired zoomed area.
 Following is the script explanation:
 
@@ -99,3 +74,29 @@ ImageView.view(noisy)
 pauliRGBeqMean = MeanFilter(noisy, zoomWidth, zoomHeight)
 ImageView.view(pauliRGBeqMean)
 ```
+
+
+## ZoomImage
+This programm takes a starting pixel (start) from the source data (a conection to a file with sourceHeight and sourceWidth) and builds an image (which has zoomHeight and zoomWidth) into a window (with dimentions windowHeight and windowWidth).
+
+* Setting constants
+
+The array in which it is going to be stored needs an index value different from the i or j values form the loops. The source file is a binary complex vector with 16 bytes per pixel (8 for the real part, 8 for the imaginary part) with no header bits, and so start is multiplied by 8 in order to skip pixels accordingly. The windowHeight and windowWidth values are trunced in order to avoid non integer values (unnaccepted by the functions that use those variables), and a vector is created with the desired dimentions. As there is not a matrix data type in Julia later it is going to be reshaped into a matrix.
+
+* Setting pointers
+
+The position of the last pickable pixel in the line is accessed, then the conection is reset to 0 (the beginning) and later to the desired beginning of the upcomming image, then it is skiped to it's width (remember that each pixel is 8 bits), then saved for further use and finally reset to 0.
+
+* Setting pace
+
+Calculates the proportion in which the rows and columns pixels are skiped. Back is needed because each access in the source file pixels automatically moves the pointer.
+
+* First line
+
+The order in which the pixels are accessed is important. The last access can't be followed by a skip(conection, 8*widthPace), the reason being is that the automatical skip when the position is accessed in the source file is not accounted in the pace calculation.
+
+* Remaining lines
+
+After the first line is read, probably there are n != widthPace, making the continuous pace place the new line before or after it should begin to be alligned. To correct that, the moduloPosition is calculated using the modulo operation to find where the pointer is at in relation with the windowWidth, then the skipAux is calculated, taking in consideration also the heightPace, the pointer is moved, and the new line can begin alligned with the first.
+
+Now that the first line is done and the number of pixels to skip in the end of every line is known the rest of the image can be done.
