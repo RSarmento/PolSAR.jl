@@ -89,7 +89,7 @@ False coloring and visualization of the result
 ```Julia
 pauliRGBeq = PauliDecompositon(A, B, C, zoomHeight, zoomWidth)
 ImageView.view(pauliRGBeq)
-``
+```
 
 * Noise and filtering
 
