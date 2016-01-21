@@ -7,7 +7,11 @@ is to summarize the full image into a smaller one. ZoomImage takes a starting pi
 
 ## Usage
 
-The file `ZoomScript.jl` contains the set up of the environment to visualize the PolSAR image and the desired zoomed area.
+The images can be downloaded in the following links:
+[ASF - Alaska Satellite Facility](https://vertex.daac.asf.alaska.edu/#)
+[UAVSAR - Uninhabited Aerial Vehicle Synthetic Aperture Radar](http://uavsar.jpl.nasa.gov/cgi-bin/download.pl)
+
+The file `ZoomScript.jl` contains a example of the environment's set up to visualize the PolSAR image and the desired zoomed area.
 Following is the script explanation:
 
 * Installing and loading packages
