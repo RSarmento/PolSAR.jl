@@ -1,4 +1,4 @@
-# PolSAR Images Applications using Julia
+# PolSAR images solution for Julia
 
 The propose of this project is to enable PolSAR images to be visualized and manipulated in Julia. 
 
