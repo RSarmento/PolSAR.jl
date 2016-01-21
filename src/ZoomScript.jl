@@ -35,12 +35,12 @@ zoomHeight 	= 11858
 zoomWidth	= 1650
 
 # A, B and C are auxiliars for each image band
-A = ZoomImagem(start, windowHeight, windowWidth, zoomHeight, zoomWidth, sourceHeight, sourceWidth, conection1)
-B = ZoomImagem(start, windowHeight, windowWidth, zoomHeight, zoomWidth, sourceHeight, sourceWidth, conection2)
-C = ZoomImagem(start, windowHeight, windowWidth, zoomHeight, zoomWidth, sourceHeight, sourceWidth, conection3)
+A = ZoomImage(start, windowHeight, windowWidth, zoomHeight, zoomWidth, sourceHeight, sourceWidth, conection1)
+B = ZoomImage(start, windowHeight, windowWidth, zoomHeight, zoomWidth, sourceHeight, sourceWidth, conection2)
+C = ZoomImage(start, windowHeight, windowWidth, zoomHeight, zoomWidth, sourceHeight, sourceWidth, conection3)
 
 # False coloring and visualization of the result
-pauliRGBeq = PauliDecompositon(A, B, C, zoomHeight, zoomWidth)
+pauliRGBeq = PauliDecomposition(A, B, C, zoomHeight, zoomWidth)
 ImageView.view(pauliRGBeq)
 
 # Add of noise and visualization
