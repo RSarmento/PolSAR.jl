@@ -5,13 +5,24 @@ The propose of this project is to enable PolSAR images to be visualized and mani
 PolSAR images are generally huge (small ones are 11858 X 3300), and normally can't be fully loaded. The approach here
 is to summarize the full image into a smaller one. ZoomImage takes a starting pixel and creates a summarized or complete image from the given coordinates.
 
-## Usage
+## How to use
 
 The images can be downloaded in the following links:
 
 [ASF - Alaska Satellite Facility](https://vertex.daac.asf.alaska.edu/#)
 
 [UAVSAR - Uninhabited Aerial Vehicle Synthetic Aperture Radar](http://uavsar.jpl.nasa.gov/cgi-bin/download.pl)
+
+The following example uses the `SanAnd_05508_10007_005_100114_L090----_CX_01.mlc` images, located in the same folder as the code files, but different images with different locations are possible by specifying the location and/or name in `ZoomScript.jl` lines 15 to 17. Keep in mind the dimention variables and if need be change lines 29 to 35 (explaned in the following sections).
+
+After saving them and the code files on the same folder:
+
+```Julia
+cd("images/and/code/folder/)
+include(ZoomScript.jl)
+```
+
+## Script explanation
 
 The file `ZoomScript.jl` contains a example of the environment's set up to visualize the PolSAR image and the desired zoomed area.
 Following is the script explanation:
