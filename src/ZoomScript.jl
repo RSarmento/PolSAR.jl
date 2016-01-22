@@ -26,13 +26,13 @@ include("SaltPepperNoise.jl")
 include("MeanFilter.jl")
 
 # Variables as described in ZoomImage.jl comments
-start		    = 0
-sourceHeight= 11858
+start	= 0
+sourceHeight = 11858
 sourceWidth	= 1650
-windowHeight= 11858
+windowHeight = 11858
 windowWidth	= 1650
-zoomHeight 	= 11858
-zoomWidth	  = 1650
+zoomHeight = 11858
+zoomWidth	= 1650
 
 # A, B and C are auxiliars for each image band
 A = ZoomImage(start, windowHeight, windowWidth, zoomHeight, zoomWidth, sourceHeight, sourceWidth, conection1)
