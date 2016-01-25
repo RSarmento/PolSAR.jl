@@ -31,18 +31,19 @@ windowWidth	= 1000
 zoomHeight 	= 1000
 zoomWidth	= 1000
 
-
-connection = RedisConnection(host="cloudarray.ddns.net",port=7001)
-conn = open_pipeline(connection)
-
 connection1 = open("SanAnd_05508_10007_005_100114_L090HHHH_CX_01.mlc")
 connection2 = open("SanAnd_05508_10007_005_100114_L090HVHV_CX_01.mlc")
 connection3 = open("SanAnd_05508_10007_005_100114_L090VVVV_CX_01.mlc")
+
+redisConnection = RedisConnection(host="cloudarray.ddns.net",port=6379)
+conn = open_pipeline(redisConnection)
 
 # A, B and C are auxiliars for each image band
 ZoomImage(start, windowHeight, windowWidth, zoomHeight, zoomWidth, sourceHeight, sourceWidth, connection1)
 ZoomImage(start, windowHeight, windowWidth, zoomHeight, zoomWidth, sourceHeight, sourceWidth, connection2)
 ZoomImage(start, windowHeight, windowWidth, zoomHeight, zoomWidth, sourceHeight, sourceWidth, connection3)
+
+disconnect(conn)
 
 # False coloring and visualization of the result
 #println("\n===== PAULI DECOMPOSITION =====\n")

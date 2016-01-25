@@ -10,7 +10,7 @@ function ZoomImage(start, windowHeight, windowWidth, zoomHeight, zoomWidth, sour
   ###================================================================================================================================###
 
   hashName = connection.name
-  println(hashName)
+
 
   # SETTING CONSTANTS:
   # The array in which is going to be stored the needed values from the source data needs and index variable different
