@@ -1,19 +1,16 @@
 ###================================================================================================================================###
 #
-# This programm takes a starting pixel (start) from the source data (a conection to a file with sourceHeight and sourceWidth) and 
+# This programm takes a starting pixel (start) from the source data (a connection to a file with sourceHeight and sourceWidth) and 
 # builds an image (which has zoomHeight and zoomWidth) into a window (with dimentions windowHeight and windowWidth).
 #
 #
 ###================================================================================================================================###
 
-using Redis
-
-connection = RedisConnection(host="cloudarray.ddns.net")
-conn = open_pipeline(connection)
-
-function ZoomImage(start, windowHeight, windowWidth, zoomHeight, zoomWidth, sourceHeight, sourceWidth, conection)
-
+function ZoomImage(start, windowHeight, windowWidth, zoomHeight, zoomWidth, sourceHeight, sourceWidth, connection)
   ###================================================================================================================================###
+
+  hashName = connection.name
+  println(hashName)
 
   # SETTING CONSTANTS:
   # The array in which is going to be stored the needed values from the source data needs and index variable different
@@ -37,15 +34,15 @@ function ZoomImage(start, windowHeight, windowWidth, zoomHeight, zoomWidth, sour
   ###================================================================================================================================###
 
   # SETTING POINTER:
-  # Here we get the position of the last pickable pixel in the line, setting the conection to 0 (the beginning) and then to the desired
+  # Here we get the position of the last pickable pixel in the line, setting the connection to 0 (the beginning) and then to the desired
   # beginning of the upcomming image, then it is skiped to it's width (remember that each pixel is 8 bits), then saved for further use
   # and finally reset to 0
-  seekstart(conection)
-  skip(conection, start)
-  skip(conection, 8*windowWidth)
-  windowWidthPosition = convert(Int32, position(conection)/8)
-  seekstart(conection)
-  skip(conection, start)
+  seekstart(connection)
+  skip(connection, start)
+  skip(connection, 8*windowWidth)
+  windowWidthPosition = convert(Int32, position(connection)/8)
+  seekstart(connection)
+  skip(connection, start)
   
   ###================================================================================================================================###
 
@@ -74,20 +71,20 @@ function ZoomImage(start, windowHeight, windowWidth, zoomHeight, zoomWidth, sour
   # FIRST LINE READING:
   
   # The order in which the pixels are accessed is important
-  # The last access can't be followed buy a skip(conection, 8*widthPace),
+  # The last access can't be followed buy a skip(connection, 8*widthPace),
   # the reason being is that the automatical skip when the position is
   # accessed in the source file is not accounted in the pace calculus
 
-	pixel = abs(read(conection, Float64, 1)[1]) 
-	hset(conn,"polsar_image",index,pixel)         
+	pixel = abs(read(connection, Float64, 1)[1]) 
+	hset(conn,hashName,index,pixel)         
 	index +=  1
 
 for (j in 1:(zoomWidth-1))
-	skip(conection, 8*widthPace)
-	pixel = abs(read(conection, Float64, 1)[1])
-	hset(conn,"polsar_image",index,pixel)
+	skip(connection, 8*widthPace)
+	pixel = abs(read(connection, Float64, 1)[1])
+	hset(conn,hashName,index,pixel)
 	index +=  1
-	skip(conection, back)
+	skip(connection, back)
 end
 
   ###================================================================================================================================###
@@ -100,33 +97,27 @@ end
   # the windowWidth, then the skipAux is calculated, taking in consideration also the
   # heightPace, the pointer is moved, and the new line can begin alligned with the first.
 
-  moduloPosition = convert(Int32, position(conection)/8)
+  moduloPosition = convert(Int32, position(connection)/8)
   moduloValue = windowWidthPosition % moduloPosition
   skipAux = 8*(moduloValue + (sourceWidth - windowWidth) + (heightPace*sourceWidth))
-  skip(conection, skipAux)  
+  skip(connection, skipAux)  
 
   # Now that the first line is done and the number of pixels to skip in the end of every line is known
   # the rest of the image can be done.
   
 	for (i in 1:zoomHeight-1)
 
-	pixel = abs(read(conection, Float64, 1)[1])
-	hset(conn,"polsar_image",index,pixel)
+	pixel = abs(read(connection, Float64, 1)[1])
+	hset(conn,hashName,index,pixel)
 	index += 1
 	for (j in 1:(zoomWidth-1))
-		skip(conection, 8*widthPace)
-		pixel = abs(read(conection, Float64, 1)[1])
-		hset(conn,"polsar_image",index,pixel)
+		skip(connection, 8*widthPace)
+		pixel = abs(read(connection, Float64, 1)[1])
+		hset(conn,hashName,index,pixel)
 		index += 1
-		skip(conection, back)
+		skip(connection, back)
 	end
-	skip(conection, skipAux)
+	skip(connection, skipAux)
 	end
-	
 
 end
-
-
-
-
-

@@ -3,15 +3,19 @@
 # This script sets up the environment to visualize and select the PolSAR image and the desired zoomed area.
 #
 ###================================================================================================================================###
-
+# PauliDecomposition is a false coloring function
+# ZoomImage is the visuazilation and zooming function
+# SaltPepperNoise ands the said noise to the image
+# MeanFilter is the proper filter to deal with salt and pepper noise
+include("PauliDecomposition.jl")
+include("ZoomImage.jl")
+include("SaltPepperNoise.jl")
+include("MeanFilter.jl")
 
 ###================================================================================================================================###
 # LOADING PACKAGES:
 # ImageView is for the visualization (see lines) and StasBase is for the ecdf() function, used in the Pauli Decomposition
-using ImageView, StatsBase
-
-
-
+using ImageView, StatsBase, Redis
 
 # SETTING CONSTANTS:
 # The connections are each a reference to one of the image bands.
@@ -28,31 +32,22 @@ zoomHeight 	= 1000
 zoomWidth	= 1000
 
 
+connection = RedisConnection(host="cloudarray.ddns.net",port=7001)
+conn = open_pipeline(connection)
 
-conection1 = open("SanAnd_05508_10007_005_100114_L090HHHH_CX_01.mlc")
-conection2 = open("SanAnd_05508_10007_005_100114_L090HVHV_CX_01.mlc")
-conection3 = open("SanAnd_05508_10007_005_100114_L090VVVV_CX_01.mlc")
-
-# PauliDecomposition is a false coloring function
-# ZoomImage is the visuazilation and zooming function
-# SaltPepperNoise ands the said noise to the image
-# MeanFilter is the proper filter to deal with salt and pepper noise
-include("PauliDecomposition.jl")
-include("ZoomImage.jl")
-include("SaltPepperNoise.jl")
-include("MeanFilter.jl")
-
-
+connection1 = open("SanAnd_05508_10007_005_100114_L090HHHH_CX_01.mlc")
+connection2 = open("SanAnd_05508_10007_005_100114_L090HVHV_CX_01.mlc")
+connection3 = open("SanAnd_05508_10007_005_100114_L090VVVV_CX_01.mlc")
 
 # A, B and C are auxiliars for each image band
-A = ZoomImage(start, windowHeight, windowWidth, zoomHeight, zoomWidth, sourceHeight, sourceWidth, conection1)
-B = ZoomImage(start, windowHeight, windowWidth, zoomHeight, zoomWidth, sourceHeight, sourceWidth, conection2)
-C = ZoomImage(start, windowHeight, windowWidth, zoomHeight, zoomWidth, sourceHeight, sourceWidth, conection3)
+ZoomImage(start, windowHeight, windowWidth, zoomHeight, zoomWidth, sourceHeight, sourceWidth, connection1)
+ZoomImage(start, windowHeight, windowWidth, zoomHeight, zoomWidth, sourceHeight, sourceWidth, connection2)
+ZoomImage(start, windowHeight, windowWidth, zoomHeight, zoomWidth, sourceHeight, sourceWidth, connection3)
 
 # False coloring and visualization of the result
-println("\n===== PAULI DECOMPOSITION =====\n")
-@time pauliRGBeq = PauliDecomposition(A, B, C, zoomHeight, zoomWidth)
-ImageView.view(pauliRGBeq)
+#println("\n===== PAULI DECOMPOSITION =====\n")
+#@time pauliRGBeq = PauliDecomposition(A, B, C, zoomHeight, zoomWidth)
+#ImageView.view(pauliRGBeq)
 
 # Add of noise and visualization
 #println("\n===== SALT PEPPER NOISE =====\n")
@@ -65,4 +60,4 @@ ImageView.view(pauliRGBeq)
 #ImageView.view(pauliRGBeqMean)
 
 println("\nSleeping 60 seconds before exiting...")
-sleep(60)
+#=sleep(60)=#
