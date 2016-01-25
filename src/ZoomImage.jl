@@ -6,8 +6,10 @@
 #
 ###================================================================================================================================###
 
+using Redis
 
-
+connection = RedisConnection(host="cloudarray.ddns.net")
+conn = open_pipeline(connection)
 
 function ZoomImage(start, windowHeight, windowWidth, zoomHeight, zoomWidth, sourceHeight, sourceWidth, conection)
 
@@ -76,15 +78,17 @@ function ZoomImage(start, windowHeight, windowWidth, zoomHeight, zoomWidth, sour
   # the reason being is that the automatical skip when the position is
   # accessed in the source file is not accounted in the pace calculus
 
-  imageVector[index] = abs(read(conection, Float64, 1)[1])          
-  index +=  1
+	pixel = abs(read(conection, Float64, 1)[1]) 
+	hset(conn,"polsar_image",index,pixel)         
+	index +=  1
 
-  for (j in 1:(zoomWidth-1))
-    skip(conection, 8*widthPace)
-    imageVector[index] = abs(read(conection, Float64, 1)[1])          
-    index +=  1
-    skip(conection, back)
-  end
+for (j in 1:(zoomWidth-1))
+	skip(conection, 8*widthPace)
+	pixel = abs(read(conection, Float64, 1)[1])
+	hset(conn,"polsar_image",index,pixel)
+	index +=  1
+	skip(conection, back)
+end
 
   ###================================================================================================================================###
   # ALL THE REMAINING LINES:
@@ -104,17 +108,25 @@ function ZoomImage(start, windowHeight, windowWidth, zoomHeight, zoomWidth, sour
   # Now that the first line is done and the number of pixels to skip in the end of every line is known
   # the rest of the image can be done.
   
-  for (i in 1:zoomHeight-1)
-    imageVector[index] = abs(read(conection, Float64, 1)[1])
-    index = index + 1
-    for (j in 1:(zoomWidth-1))
-      skip(conection, 8*widthPace)
-      imageVector[index] = abs(read(conection, Float64, 1)[1])
-      index = index + 1
-      skip(conection, back)
-    end
-    skip(conection, skipAux)
-  end
-  return (imageVector)
+	for (i in 1:zoomHeight-1)
+
+	pixel = abs(read(conection, Float64, 1)[1])
+	hset(conn,"polsar_image",index,pixel)
+	index += 1
+	for (j in 1:(zoomWidth-1))
+		skip(conection, 8*widthPace)
+		pixel = abs(read(conection, Float64, 1)[1])
+		hset(conn,"polsar_image",index,pixel)
+		index += 1
+		skip(conection, back)
+	end
+	skip(conection, skipAux)
+	end
+	
+
 end
+
+
+
+
 
