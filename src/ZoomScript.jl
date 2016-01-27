@@ -20,6 +20,7 @@ using ImageView, StatsBase, Redis
 # SETTING CONSTANTS:
 # The connections are each a reference to one of the image bands.
 # Variables as described in ZoomImage.jl comments
+
 start		= 0
 
 sourceHeight= 11858
@@ -39,15 +40,15 @@ redisConnection = RedisConnection(host="cloudarray.ddns.net",port=6379)
 conn = open_pipeline(redisConnection)
 
 # A, B and C are auxiliars for each image band
-ZoomImage(start, windowHeight, windowWidth, zoomHeight, zoomWidth, sourceHeight, sourceWidth, connection1)
-ZoomImage(start, windowHeight, windowWidth, zoomHeight, zoomWidth, sourceHeight, sourceWidth, connection2)
-ZoomImage(start, windowHeight, windowWidth, zoomHeight, zoomWidth, sourceHeight, sourceWidth, connection3)
+ZoomImage(start, windowHeight, windowWidth, zoomHeight, zoomWidth, sourceHeight, sourceWidth, connection1) # HHHH
+ZoomImage(start, windowHeight, windowWidth, zoomHeight, zoomWidth, sourceHeight, sourceWidth, connection2) # HVHV
+ZoomImage(start, windowHeight, windowWidth, zoomHeight, zoomWidth, sourceHeight, sourceWidth, connection3) # VVVV
 
 disconnect(conn)
 
 # False coloring and visualization of the result
 #println("\n===== PAULI DECOMPOSITION =====\n")
-#@time pauliRGBeq = PauliDecomposition(A, B, C, zoomHeight, zoomWidth)
+@time pauliRGBeq = PauliDecomposition(connection1.name, connection2.name, connection3.name, zoomHeight, zoomWidth)
 #ImageView.view(pauliRGBeq)
 
 # Add of noise and visualization
