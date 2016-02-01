@@ -61,5 +61,5 @@ ImageView.view(pauliRGBeq)
 #ImageView.view(pauliRGBeqMean)
 
 println("\nSleeping 60 seconds before exiting...")
-sleep(60)
+sleep(10)
 disconnect(conn)

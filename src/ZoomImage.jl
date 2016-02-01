@@ -8,7 +8,7 @@
 
 function ZoomImage(start, windowHeight, windowWidth, zoomHeight, zoomWidth, sourceHeight, sourceWidth, connection)
 
-    hashName = connection.name
+    listName = connection.name
 
     # SETTING CONSTANTS:
     # The array in which is going to be stored the needed values from the source data needs and index variable different
@@ -69,13 +69,13 @@ function ZoomImage(start, windowHeight, windowWidth, zoomHeight, zoomWidth, sour
     # accessed in the source file is not accounted in the pace calculus
 
     pixel = abs(read(connection, Float64, 1)[1]) 
-    hset(conn,hashName,index,pixel)         
+    rpush(conn,listName,pixel)
     index +=  1
 
     for (j in 1:(zoomWidth-1))
         skip(connection, 8*widthPace)
         pixel = abs(read(connection, Float64, 1)[1])
-        hset(conn,hashName,index,pixel)
+        rpush(conn,listName,pixel)
         index +=  1
         skip(connection, back)
     end
@@ -99,12 +99,12 @@ function ZoomImage(start, windowHeight, windowWidth, zoomHeight, zoomWidth, sour
   
     for (i in 1:zoomHeight-1)
         pixel = abs(read(connection, Float64, 1)[1])
-        hset(conn,hashName,index,pixel)
+        rpush(conn,listName,pixel)
         index += 1
         for (j in 1:(zoomWidth-1))
             skip(connection, 8*widthPace)
             pixel = abs(read(connection, Float64, 1)[1])
-            hset(conn,hashName,index,pixel)
+            rpush(conn,listName,pixel)
             index += 1
             skip(connection, back)
         end
