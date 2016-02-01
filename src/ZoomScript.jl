@@ -36,20 +36,19 @@ connection1 = open("SanAnd_05508_10007_005_100114_L090HHHH_CX_01.mlc")
 connection2 = open("SanAnd_05508_10007_005_100114_L090HVHV_CX_01.mlc")
 connection3 = open("SanAnd_05508_10007_005_100114_L090VVVV_CX_01.mlc")
 
-redisConnection = RedisConnection(host="cloudarray.ddns.net",port=6379)
+redisConnection = RedisConnection(host="localhost",port=6379)
 conn = open_pipeline(redisConnection)
 
-# A, B and C are auxiliars for each image band
-ZoomImage(start, windowHeight, windowWidth, zoomHeight, zoomWidth, sourceHeight, sourceWidth, connection1) # HHHH
-ZoomImage(start, windowHeight, windowWidth, zoomHeight, zoomWidth, sourceHeight, sourceWidth, connection2) # HVHV
-ZoomImage(start, windowHeight, windowWidth, zoomHeight, zoomWidth, sourceHeight, sourceWidth, connection3) # VVVV
-
-disconnect(conn)
+# image bands
+#=ZoomImage(start, windowHeight, windowWidth, zoomHeight, zoomWidth, sourceHeight, sourceWidth, connection1) # HHHH=#
+#=ZoomImage(start, windowHeight, windowWidth, zoomHeight, zoomWidth, sourceHeight, sourceWidth, connection2) # HVHV=#
+#=ZoomImage(start, windowHeight, windowWidth, zoomHeight, zoomWidth, sourceHeight, sourceWidth, connection3) # VVVV=#
 
 # False coloring and visualization of the result
 #println("\n===== PAULI DECOMPOSITION =====\n")
+
 @time pauliRGBeq = PauliDecomposition(connection1.name, connection2.name, connection3.name, zoomHeight, zoomWidth)
-#ImageView.view(pauliRGBeq)
+ImageView.view(pauliRGBeq)
 
 # Add of noise and visualization
 #println("\n===== SALT PEPPER NOISE =====\n")
@@ -62,4 +61,5 @@ disconnect(conn)
 #ImageView.view(pauliRGBeqMean)
 
 println("\nSleeping 60 seconds before exiting...")
-#=sleep(60)=#
+sleep(60)
+disconnect(conn)
