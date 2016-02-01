@@ -97,7 +97,7 @@ for i in pairs(mHH) do
         pauliB[#pauliB+1]=2*mHV[i]
 end
 
--- calculate ecdf
+-- ecdf
 local pauliReq = ecdf(pauliR,pauliR)
 local pauliGeq = ecdf(pauliG,pauliG)
 local pauliBeq = ecdf(pauliB,pauliB)
