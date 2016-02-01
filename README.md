@@ -1,11 +1,10 @@
-# PolSAR images solution for Julia
+# PolSAR image processing in Julia
 
-The propose of this project is to enable PolSAR images to be visualized and manipulated in Julia. 
+The propose of this project is to enable [Polarimetric](https://en.wikipedia.org/wiki/Synthetic_aperture_radar#Polarimetry) SAR images to be visualized and manipulated in Julia. 
 
-PolSAR images are generally huge (small ones are 11858 X 3300), and normally can't be fully loaded. The approach here
-is to summarize the full image into a smaller one. ZoomImage takes a starting pixel and creates a summarized or complete image from the given coordinates.
+PolSAR images are generally huge (small ones are 11858 X 3300), and normally can't be fully loaded in a single computer. The approach here is to summarize the full image into a smaller one. ZoomImage takes a starting pixel and creates a summarized or complete image from the given coordinates.
 
-## How to use
+## Usage
 
 The images can be downloaded in the following links:
 
@@ -22,7 +21,7 @@ cd("images/and/code/folder/)
 include(ZoomScript.jl)
 ```
 
-## Script explanation
+## Example
 
 The file `ZoomScript.jl` contains a example of the environment's set up to visualize the PolSAR image and the desired zoomed area.
 Following is the script explanation:
@@ -123,3 +122,7 @@ The order in which the pixels are accessed is important. The last access can't b
 After the first line is read, probably there are n != widthPace, making the continuous pace place the new line before or after it should begin to be alligned. To correct that, the moduloPosition is calculated using the modulo operation to find where the pointer is at in relation with the windowWidth, then the skipAux is calculated, taking in consideration also the heightPace, the pointer is moved, and the new line can begin alligned with the first.
 
 Now that the first line is done and the number of pixels to skip in the end of every line is known the rest of the image can be done.
+
+## Acknowledgements
+
+This project was partially founded by _National Counsel of Technological and Scientific Development_ (CNPq, Brazil) and research was carried on at the _Laboratório de Computação Científica e Análise Numérica_ (LaCCAN) at the Federal University of Alagoas (UFAL).
