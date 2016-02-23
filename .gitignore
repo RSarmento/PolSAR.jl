@@ -1,1 +1,5 @@
 *.mlc
+*.slc
+*.ann
+*.swp
+*.txt

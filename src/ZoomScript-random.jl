@@ -35,9 +35,9 @@ windowWidth	= 1000
 zoomHeight 	= 1000
 zoomWidth	= 1000
 
-connection1 = open("ChiVol_29304_14054_007_140429_L090HH_CX_01.slc")
-connection2 = open("ChiVol_29304_14054_007_140429_L090VH_CX_01.slc")
-connection3 = open("ChiVol_29304_14054_007_140429_L090VV_CX_01.slc")
+connection1 = "random-1"
+connection2 = "random-2"
+connection3 = "random-3"
 
 redisConnection = RedisConnection(host="localhost",port=6379)
 conn = open_pipeline(redisConnection)
@@ -50,7 +50,7 @@ conn = open_pipeline(redisConnection)
 # False coloring and visualization of the result
 #println("\n===== PAULI DECOMPOSITION =====\n")
 
-pauliRGBeq = PauliDecomposition(connection1.name, connection2.name, connection3.name, zoomHeight, zoomWidth)
+pauliRGBeq = PauliDecomposition(connection1, connection2, connection3, zoomHeight, zoomWidth)
 #ImageView.view(pauliRGBeq)
 
 # Add of noise and visualization
