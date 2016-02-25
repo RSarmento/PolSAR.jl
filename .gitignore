@@ -3,3 +3,6 @@
 *.ann
 *.swp
 *.txt
+*.png
+ZoomScript-random.jl
+PauliDecomposition-random.jl
