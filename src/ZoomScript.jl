@@ -1,74 +1,89 @@
-###================================================================================================================================###
-#
-# This script sets up the environment to visualize and select the PolSAR image and the desired zoomed area.
-#
-###================================================================================================================================###
+module ZoomScript
 
 using Redis, Images
+    
+include("ReadImage.jl")
+include("PauliDecomposition.jl")    # A false coloring function
+include("ZoomImage.jl")             # Visualization and zooming function
+#include("SaltPepperNoise.jl")       # SaltPepperNoise ands the said noise to the image
+#include("MeanFilter.jl")            # MeanFilter is the proper filter to deal with salt and pepper noise
 
-# PauliDecomposition is a false coloring function
-# ZoomImage is the visuazilation and zooming function
-# SaltPepperNoise ands the said noise to the image
-# MeanFilter is the proper filter to deal with salt and pepper noise
+function view(;random=false)
 
-include("PauliDecomposition.jl")
-include("ZoomImage.jl")
-include("SaltPepperNoise.jl")
-include("MeanFilter.jl")
+    tic()
 
-###================================================================================================================================###
+    global time = zeros(3)
 
-# Redis connection
+    # CONSTANTS
 
-redisConnection = RedisConnection(host="localhost",port=6379)
-conn = open_pipeline(redisConnection)
+    # SandAnd dims
+    #=const sourceHeight          = 11858=#
+    #=const sourceWidth	        = 1650=#
 
-# SETTING CONSTANTS:
-# The connections are each a reference to one of the image bands.
-# Variables as described in ZoomImage.jl comments
+    #ChiVol dims
+    const start		            = 0
+    const sourceHeight          = 153546
+    const sourceWidth	        = 9580
+    const windowHeight          = 1000
+    const windowWidth	        = 1000
+    const zoomHeight 	        = 1000
+    const zoomWidth	            = 1000
 
-start		= 0
+    # REDIS CONNECTION
+    global redisConnection = RedisConnection(host="localhost",port=6379)
+    global pipeline        = open_pipeline(redisConnection)
+    global pipeline2       = open_pipeline(redisConnection)
 
-#ChiVol dims
-sourceHeight    = 153546
-sourceWidth	= 9580
+    # The connections are each a reference to one of the image bands.
+    connection1 = open("ChiVol_29304_14054_007_140429_L090HH_CX_01.slc")
+    connection2 = open("ChiVol_29304_14054_007_140429_L090VH_CX_01.slc")
+    connection3 = open("ChiVol_29304_14054_007_140429_L090VV_CX_01.slc")
 
-#SanAnd dims
-#sourceHeight    = 11858
-#sourceWidth	= 1650
+    #=connection1 = open("SanAnd_05508_10007_005_100114_L090HHHH_CX_01.mlc")=#
+    #=connection2 = open("SanAnd_05508_10007_005_100114_L090HVHV_CX_01.mlc")=#
+    #=connection3 = open("SanAnd_05508_10007_005_100114_L090VVVV_CX_01.mlc")=#
 
+    # Image bands
+    if(random==false) 
+        ReadImage(start, windowHeight, windowWidth, zoomHeight, zoomWidth, sourceHeight, sourceWidth, connection1, connection2, connection3)
+        time[1] = toc()
+    else
 
-windowHeight    = 1000
-windowWidth	= 1000
+        A = ZoomImage(start, windowHeight, windowWidth, zoomHeight, zoomWidth, sourceHeight, sourceWidth, connection1)
+        B = ZoomImage(start, windowHeight, windowWidth, zoomHeight, zoomWidth, sourceHeight, sourceWidth, connection2)
+        C = ZoomImage(start, windowHeight, windowWidth, zoomHeight, zoomWidth, sourceHeight, sourceWidth, connection3)
 
-zoomHeight 	= 1000
-zoomWidth	= 1000
+        for i in 1:1000000
+            rpush(pipeline,connection1.name,A[i])
+            rpush(pipeline,connection2.name,B[i])
+            rpush(pipeline,connection3.name,C[i])
+        end
 
-connection1 = open("ChiVol_29304_14054_007_140429_L090HH_CX_01.slc")
-connection2 = open("ChiVol_29304_14054_007_140429_L090VH_CX_01.slc")
-connection3 = open("ChiVol_29304_14054_007_140429_L090VV_CX_01.slc")
+        time[1] = toc()
+    end
 
-#connection1 = open("SanAnd_05508_10007_005_100114_L090HHHH_CX_01.mlc")
-#connection2 = open("SanAnd_05508_10007_005_100114_L090HVHV_CX_01.mlc")
-#connection3 = open("SanAnd_05508_10007_005_100114_L090VVVV_CX_01.mlc")
+    pauliRGBeq = PauliDecomposition(connection1.name, connection2.name, connection3.name)
+    saveimg_time = @elapsed Images.save("img.png",convert(Image,pauliRGBeq))
+    time[3] = time[3] + saveimg_time
 
-# image bands
-#ZoomImage(start, windowHeight, windowWidth, zoomHeight, zoomWidth, sourceHeight, sourceWidth, connection1) # HHHH=#
-#ZoomImage(start, windowHeight, windowWidth, zoomHeight, zoomWidth, sourceHeight, sourceWidth, connection2) # HVHV=#
-#ZoomImage(start, windowHeight, windowWidth, zoomHeight, zoomWidth, sourceHeight, sourceWidth, connection3) # VVVV=#
+    # Add of noise and visualization
+    #@time noisy = SaltPepperNoise(pauliRGBeq, zoomWidth, zoomHeight)
 
-pauliRGBeq = PauliDecomposition(connection1.name, connection2.name, connection3.name, zoomHeight, zoomWidth)
-Images.save("img.png",convert(Image,pauliRGBeq))
+    # Filtering and visualization
+    #@time pauliRGBeqMean = MeanFilter(noisy, zoomWidth, zoomHeight)
 
-#ImageView.view(pauliRGBeq)
-# Add of noise and visualization
-#println("\n===== SALT PEPPER NOISE =====\n")
-#@time noisy = SaltPepperNoise(pauliRGBeq, zoomWidth, zoomHeight)
-#ImageView.view(noisy)
+    flushall(redisConnection)
 
-# Filtering and visualization
-#println("\n===== MEAN FILTER =====\n")
-#@time pauliRGBeqMean = MeanFilter(noisy, zoomWidth, zoomHeight)
-#ImageView.view(pauliRGBeqMean)
+    close(connection1)
+    close(connection2)
+    close(connection3)
 
-disconnect(conn)
+    disconnect(pipeline)
+    disconnect(pipeline2)
+    disconnect(redisConnection)
+
+    time
+
+end
+
+end
