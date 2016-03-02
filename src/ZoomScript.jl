@@ -73,9 +73,7 @@ function view(imgname="img.png";random=false)
 
     pauliRGBeq = PauliDecomposition(connection1.name, connection2.name, connection3.name)
     saveimg_time = @elapsed Images.save(imgname,convert(Image,pauliRGBeq))
-    time[4] = saveimg_time
-    time[5] = time[3]
-    time[3] = time[3] + saveimg_time
+	time[5] = saveimg_time
 
     # Add of noise and visualization
     #@time noisy = SaltPepperNoise(pauliRGBeq, zoomWidth, zoomHeight)
