@@ -5,6 +5,13 @@ include("ZoomScript.jl")
 
 function run_test()
 
+	if !(ispath("tests/imgs") && ispath("tests"))
+	   mkdir("tests")
+	   mkdir("tests/imgs")
+	   mkdir("tests/imgs/random")
+	   mkdir("tests/imgs/fixed")
+	end
+
     data = zeros(30,4)
     data_size = length(data[:,1])
 
