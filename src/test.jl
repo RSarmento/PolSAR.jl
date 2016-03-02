@@ -4,7 +4,7 @@ include("ZoomScript.jl")
 
 function run_test()
 
-    data = zeros(2,4)
+    data = zeros(30,4)
     data_size = length(data[:,1])
 
     # Redis connection
@@ -38,8 +38,8 @@ function run_test()
     step2_sd = std(data[:,2])
     step3_sd = std(data[:,3])
     
-    step3_rand_median   = std(data[:,4])
-    step3_rand_mean     = std(data[:,4])
+    step3_rand_median   = median(data[:,4])
+    step3_rand_mean     = mean(data[:,4])
     step3_rand_sd       = std(data[:,4])
 
     ########## data
@@ -47,7 +47,7 @@ function run_test()
     fdata = open("data.txt","w+")
     
     write(fdata,"data \n")
-    write(fdata,"| Step 1 | Step 2  | Step 3 (fixed)  | Step 3 (random) \n")
+    write(fdata,"| Step 1 | Step 2  | Step 3 (fixed)  | Step 3 (random) | \n")
     write(fdata,"$data")
 
     f = open("table.txt","w+")
