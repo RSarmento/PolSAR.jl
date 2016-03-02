@@ -8,11 +8,17 @@ include("ZoomImage.jl")             # Visualization and zooming function
 #include("SaltPepperNoise.jl")       # SaltPepperNoise ands the said noise to the image
 #include("MeanFilter.jl")            # MeanFilter is the proper filter to deal with salt and pepper noise
 
-function view(;random=false)
+function view(imgname="img.png";random=false)
 
     tic()
 
-    global time = zeros(3)
+    global time = zeros(5)
+
+    # time[1] = step 1
+    # time[2] = step 2
+    # time[3] = step 3
+    # time[4] = step 3: get list
+    # time[5] = step 3: view image
 
     # CONSTANTS
 
@@ -21,6 +27,9 @@ function view(;random=false)
     #=const sourceWidth	        = 1650=#
 
     #ChiVol dims
+    #=const sourceHeight          = 153546=#
+    #=const sourceWidth	        = 9580=#
+
     const start		            = 0
     const sourceHeight          = 153546
     const sourceWidth	        = 9580
@@ -49,10 +58,10 @@ function view(;random=false)
         time[1] = toc()
     else
 
-        A = ZoomImage(start, windowHeight, windowWidth, zoomHeight, zoomWidth, sourceHeight, sourceWidth, connection1)
-        B = ZoomImage(start, windowHeight, windowWidth, zoomHeight, zoomWidth, sourceHeight, sourceWidth, connection2)
-        C = ZoomImage(start, windowHeight, windowWidth, zoomHeight, zoomWidth, sourceHeight, sourceWidth, connection3)
-
+        A = rand(1000000)
+        B = rand(1000000)
+        C = rand(1000000)
+    
         for i in 1:1000000
             rpush(pipeline,connection1.name,A[i])
             rpush(pipeline,connection2.name,B[i])
@@ -63,7 +72,9 @@ function view(;random=false)
     end
 
     pauliRGBeq = PauliDecomposition(connection1.name, connection2.name, connection3.name)
-    saveimg_time = @elapsed Images.save("img.png",convert(Image,pauliRGBeq))
+    saveimg_time = @elapsed Images.save(imgname,convert(Image,pauliRGBeq))
+    time[4] = saveimg_time
+    time[5] = time[3]
     time[3] = time[3] + saveimg_time
 
     # Add of noise and visualization

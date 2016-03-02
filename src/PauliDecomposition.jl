@@ -16,8 +16,9 @@ function PauliDecomposition(mHH, mHV, mVV)
     pauliReq = map(x->parse(Float64,x),pauliReq)
     pauliGeq = map(x->parse(Float64,x),pauliGeq)
     pauliBeq = map(x->parse(Float64,x),pauliBeq)
+    pauliRGBeq = convert(Array{Float64}, reshape([[pauliReq],[pauliGeq],[pauliBeq]],(1000,1000,3)))
 
     time[3] = toc()
-    return convert(Array{Float64}, reshape([[pauliReq],[pauliGeq],[pauliBeq]],(1000,1000,3)))
 
+    pauliRGBeq 
 end
