@@ -8,7 +8,7 @@ include("ZoomImage.jl")             # Visualization and zooming function
 #include("SaltPepperNoise.jl")       # SaltPepperNoise ands the said noise to the image
 #include("MeanFilter.jl")            # MeanFilter is the proper filter to deal with salt and pepper noise
 
-function view(imgname="img.png";random=false)
+function view(hh::AbstractString, hv::AbstractString, vv::AbstractString, imgname="img.png";random=false)
 
     tic()
 
@@ -17,8 +17,6 @@ function view(imgname="img.png";random=false)
     # time[1] = step 1
     # time[2] = step 2
     # time[3] = step 3
-    # time[4] = step 3: get list
-    # time[5] = step 3: view image
 
     # CONSTANTS
 
@@ -43,10 +41,14 @@ function view(imgname="img.png";random=false)
     global pipeline        = open_pipeline(redisConnection)
     global pipeline2       = open_pipeline(redisConnection)
 
+    connection1 = open(hh) # HHHH
+    connection2 = open(hv) # HVHV
+    connection3 = open(vv) # VVVV
+
     # The connections are each a reference to one of the image bands.
-    connection1 = open("ChiVol_29304_14054_007_140429_L090HH_CX_01.slc")
-    connection2 = open("ChiVol_29304_14054_007_140429_L090VH_CX_01.slc")
-    connection3 = open("ChiVol_29304_14054_007_140429_L090VV_CX_01.slc")
+    #=connection1 = open("ChiVol_29304_14054_007_140429_L090HH_CX_01.slc") # HHHH=#
+    #=connection2 = open("ChiVol_29304_14054_007_140429_L090VH_CX_01.slc") # HVHV=#
+    #=connection3 = open("ChiVol_29304_14054_007_140429_L090VV_CX_01.slc") # VVVV=#
 
     #=connection1 = open("SanAnd_05508_10007_005_100114_L090HHHH_CX_01.mlc")=#
     #=connection2 = open("SanAnd_05508_10007_005_100114_L090HVHV_CX_01.mlc")=#
@@ -73,7 +75,7 @@ function view(imgname="img.png";random=false)
 
     pauliRGBeq = PauliDecomposition(connection1.name, connection2.name, connection3.name)
     saveimg_time = @elapsed Images.save(imgname,convert(Image,pauliRGBeq))
-	time[5] = saveimg_time
+	time[3] = time[3] + saveimg_time
 
     # Add of noise and visualization
     #@time noisy = SaltPepperNoise(pauliRGBeq, zoomWidth, zoomHeight)
