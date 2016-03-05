@@ -56,6 +56,7 @@ function view(hh::AbstractString, hv::AbstractString, vv::AbstractString, imgnam
 
     # Image bands
     if(random==false) 
+        println("# --------- Step 1")
         ReadImage(start, windowHeight, windowWidth, zoomHeight, zoomWidth, sourceHeight, sourceWidth, connection1, connection2, connection3)
         time[1] = toc()
     else
