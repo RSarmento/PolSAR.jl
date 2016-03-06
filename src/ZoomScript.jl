@@ -9,7 +9,7 @@ include("ZoomImage.jl")             # Visualization and zooming function
 #include("SaltPepperNoise.jl")      # SaltPepperNoise ands the said noise to the image
 #include("MeanFilter.jl")           # MeanFilter is the proper filter to deal with salt and pepper noise
 
-function view(hh::AbstractString, hv::AbstractString, vv::AbstractString,percent=100, imgname="img.png")
+function view(hh::AbstractString, hv::AbstractString, vv::AbstractString,zoomPercent=100,windowPercent=100,imgname="img.png")
 
 	tic()
 
@@ -30,12 +30,12 @@ function view(hh::AbstractString, hv::AbstractString, vv::AbstractString,percent
     #=const sourceWidth	        	= 9580=#
 
     start		            = 0
-    sourceHeight          	= 153546
-    sourceWidth	        	= 9580
-    windowHeight          	= int(sourceHeight * (percent/100))
-    windowWidth	        	= int(sourceWidth * (percent/100))
-    zoomHeight 	        	= windowHeight
-    zoomWidth	            = windowWidth
+    const sourceHeight      = 11858
+    const sourceWidth	    = 1650
+    windowHeight          	= round(Int,sourceHeight*(windowPercent/100))
+    windowWidth	        	= round(Int,sourceWidth*(windowPercent/100))
+    zoomHeight 	        	= round(Int,sourceHeight*(zoomPercent/100))
+    zoomWidth	            = round(Int,sourceWidth*(zoomPercent/100))
 
     connection1 = open(hh) # HHHH
     connection2 = open(hv) # HVHV

@@ -3,75 +3,63 @@ using DataFrames
 
 include("ZoomScript.jl")
 
-function run_test()
+# A0 100%       = 153546 x 9580
+# A1 50%        = 76773 x 4790
+# A2 25%        = 38386.5 x 2395
+# A3 12.5%      = 19193.25 x 1197.5
+# A4 6.25%      = 9596.625 x 598.75
+# A5 3.125%     = 4798.3125 x 299.375
+# A6 1.5625%    = 2399.15625 x 149.6875
+
+function run_test(id,scenario,zPercent,wPercent)
+
+    reps = 10
 
 	if !(ispath("tests/imgs") && ispath("tests"))
 	   mkdir("tests")
+	   mkdir("tests/scenario1")
+	   mkdir("tests/scenario2")
 	   mkdir("tests/imgs")
-	   mkdir("tests/imgs/random")
-	   mkdir("tests/imgs/fixed")
+	   mkdir("tests/imgs/scenario1")
+	   mkdir("tests/imgs/scenario2")
 	end
 
-    data = zeros(30,4)
-    data_size = length(data[:,1])
-
-    # Redis connection
-    c = RedisConnection(host="localhost",port=6379)
+    data = zeros(reps,3)
 
     # Steps 1,2,3
-    for i in 1:data_size                                    # 1 to number of lines
-        t = ZoomScript.view("tests/imgs/fixed/img-$i.png")        # view() returns 3 values: step 1, 2, 3 elapsed time
+    for i in 1:reps
+        #=t = ZoomScript.view("ChiVol_29304_14054_007_140429_L090HH_CX_01.slc","ChiVol_29304_14054_007_140429_L090VH_CX_01.slc","ChiVol_29304_14054_007_140429_L090VV_CX_01.slc",zPercent,wPercent,"tests/imgs/$scenario/img-$id-$i.png")=#
+        t = ZoomScript.view("SanAnd_05508_10007_005_100114_L090VVVV_CX_01.mlc","SanAnd_05508_10007_005_100114_L090VVVV_CX_01.mlc","SanAnd_05508_10007_005_100114_L090VVVV_CX_01.mlc",zPercent,wPercent,"tests/imgs/$scenario/img-$id-$i.png")
         for j in 1:3
             data[i,j]  = t[j]
         end
-        flushall(c)
     end
-
-    # Step 3 (random)
-    for i in 1:data_size
-        t = ZoomScript.view("tests/imgs/random/img-$i.png",random=true)
-        data[i,4] = t[3]
-        flushall(c)
-    end
-    
-    step1_median = median(data[:,1])
-    step2_median = median(data[:,2])
-    step3_median = median(data[:,3])
-    
-    step1_mean = mean(data[:,1])
-    step2_mean = mean(data[:,2])
-    step3_mean = mean(data[:,3])
-
-    step1_sd = std(data[:,1])
-    step2_sd = std(data[:,2])
-    step3_sd = std(data[:,3])
-    
-    step3_rand_median   = median(data[:,4])
-    step3_rand_mean     = mean(data[:,4])
-    step3_rand_sd       = std(data[:,4])
-
-    ########## table
-
-	f = open("tests/table.txt","w+")
-
-    write(f,"| Metrics          | Median                | Mean                  | SD                |\n")
-    write(f,"|:-----------------|:----------------------|:----------------------|:------------------|\n")
-    write(f,"| Step 1           | $step1_median         | $step1_mean           | $step1_sd         |\n")
-    write(f,"| Step 2           | $step2_median         | $step2_mean           | $step2_sd         |\n")
-    write(f,"| Step 3 (fixed)   | $step3_median         | $step3_mean           | $step3_sd         |\n")
-    write(f,"| Step 3 (random)  | $step3_rand_median    | $step3_rand_mean      | $step3_rand_sd    |\n")
     
 	########## csv
-
+	
 	data = DataFrame(data)
-	rename!(data, [:x1, :x2, :x3, :x4], [:Step1, :Step2, :Step3_fixed, :Step3_random])
+	rename!(data, [:x1, :x2, :x3], [:Step1, :Step2, :Step3])
 
-	writetable("tests/output.csv", data)
-
-    flush(f)
-    close(f)
-    disconnect(c)
+	writetable("tests/$scenario/$id-output.csv", data)
 
 end
 
-run_test()
+percents = [1.5625, 3.125, 6.25, 12.5, 25, 50, 100]
+
+# scenario 1
+
+#=j=6=#
+
+#=for i in percents=#
+    #=run_test("A$j","scenario1",i,i)=#
+    #=j-=1=#
+#=end=#
+
+# scenario 2
+
+j=6
+
+for i in percents
+    run_test("A$j","scenario2",i,1.5625)
+    j-=1
+end
