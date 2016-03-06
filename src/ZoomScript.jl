@@ -3,14 +3,15 @@ module ZoomScript
 using Redis, Images
     
 include("ReadImage.jl")
-include("PauliDecomposition.jl")    # A false coloring function
+include("PauliLocal.jl")    		# A false coloring function
 include("ZoomImage.jl")             # Visualization and zooming function
-#include("SaltPepperNoise.jl")       # SaltPepperNoise ands the said noise to the image
-#include("MeanFilter.jl")            # MeanFilter is the proper filter to deal with salt and pepper noise
+#include("PauliDecomposition.jl")   # A false coloring function (with Redis)
+#include("SaltPepperNoise.jl")      # SaltPepperNoise ands the said noise to the image
+#include("MeanFilter.jl")           # MeanFilter is the proper filter to deal with salt and pepper noise
 
-function view(hh::AbstractString, hv::AbstractString, vv::AbstractString, imgname="img.png";random=false)
+function view(hh::AbstractString, hv::AbstractString, vv::AbstractString,percent=100, imgname="img.png")
 
-    tic()
+	tic()
 
     global time = zeros(5)
 
@@ -21,25 +22,20 @@ function view(hh::AbstractString, hv::AbstractString, vv::AbstractString, imgnam
     # CONSTANTS
 
     # SandAnd dims
-    #=const sourceHeight          = 11858=#
-    #=const sourceWidth	        = 1650=#
+    #=const sourceHeight          	= 11858=#
+    #=const sourceWidth	        	= 1650=#
 
     #ChiVol dims
-    #=const sourceHeight          = 153546=#
-    #=const sourceWidth	        = 9580=#
+    #=const sourceHeight          	= 153546=#
+    #=const sourceWidth	        	= 9580=#
 
-    const start		            = 0
-    const sourceHeight          = 153546
-    const sourceWidth	        = 9580
-    const windowHeight          = 1000
-    const windowWidth	        = 1000
-    const zoomHeight 	        = 1000
-    const zoomWidth	            = 1000
-
-    # REDIS CONNECTION
-    global redisConnection = RedisConnection(host="localhost",port=6379)
-    global pipeline        = open_pipeline(redisConnection)
-    global pipeline2       = open_pipeline(redisConnection)
+    start		            = 0
+    sourceHeight          	= 153546
+    sourceWidth	        	= 9580
+    windowHeight          	= int(sourceHeight * (percent/100))
+    windowWidth	        	= int(sourceWidth * (percent/100))
+    zoomHeight 	        	= windowHeight
+    zoomWidth	            = windowWidth
 
     connection1 = open(hh) # HHHH
     connection2 = open(hv) # HVHV
@@ -54,29 +50,24 @@ function view(hh::AbstractString, hv::AbstractString, vv::AbstractString, imgnam
     #=connection2 = open("SanAnd_05508_10007_005_100114_L090HVHV_CX_01.mlc")=#
     #=connection3 = open("SanAnd_05508_10007_005_100114_L090VVVV_CX_01.mlc")=#
 
+	## Step 1
+
     # Image bands
-    if(random==false) 
-        println("# --------- Step 1")
-        ReadImage(start, windowHeight, windowWidth, zoomHeight, zoomWidth, sourceHeight, sourceWidth, connection1, connection2, connection3)
-        time[1] = toc()
-    else
 
-        A = rand(1000000)
-        B = rand(1000000)
-        C = rand(1000000)
-    
-        for i in 1:1000000
-            rpush(pipeline,connection1.name,A[i])
-            rpush(pipeline,connection2.name,B[i])
-            rpush(pipeline,connection3.name,C[i])
-        end
+	A = ZoomImage(start, windowHeight, windowWidth, zoomHeight, zoomWidth, sourceHeight, sourceWidth, connection1)
+	B = ZoomImage(start, windowHeight, windowWidth, zoomHeight, zoomWidth, sourceHeight, sourceWidth, connection2)
+	C = ZoomImage(start, windowHeight, windowWidth, zoomHeight, zoomWidth, sourceHeight, sourceWidth, connection3)
+	time[1] = toc()
 
-        time[1] = toc()
-    end
+	## Step 2
+	tic()
+	pauliRGBeq = PauliDecomposition(A, B, C, zoomHeight, zoomWidth)
+	time[2] = toc()
 
-    pauliRGBeq = PauliDecomposition(connection1.name, connection2.name, connection3.name)
-    saveimg_time = @elapsed Images.save(imgname,convert(Image,pauliRGBeq))
-	time[3] = time[3] + saveimg_time
+	## Step 3
+	tic()
+    saveimg_time = Images.save(imgname,convert(Image,pauliRGBeq))
+	time[3] = toc()
 
     # Add of noise and visualization
     #@time noisy = SaltPepperNoise(pauliRGBeq, zoomWidth, zoomHeight)
@@ -84,17 +75,11 @@ function view(hh::AbstractString, hv::AbstractString, vv::AbstractString, imgnam
     # Filtering and visualization
     #@time pauliRGBeqMean = MeanFilter(noisy, zoomWidth, zoomHeight)
 
-    flushall(redisConnection)
-
     close(connection1)
     close(connection2)
     close(connection3)
 
-    disconnect(pipeline)
-    disconnect(pipeline2)
-    disconnect(redisConnection)
-
-    time
+	time
 
 end
 

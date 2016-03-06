@@ -1,4 +1,6 @@
-function PauliLocal(mHH, mHV, mVV, height, widht)
+using StatsBase
+
+function PauliDecomposition(mHH, mHV, mVV, height, widht)
 
 	pauliR = mHH + mVV
 

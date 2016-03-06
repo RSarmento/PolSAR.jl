@@ -5,6 +5,8 @@ include("ZoomScript.jl")
 
 function run_test(id::AbstractString,file1::AbstractString, file2::AbstractString, file3::AbstractString)
 
+	reps = 30
+
 	if !(ispath("tests/imgs") && ispath("tests"))
 	   mkdir("tests")
 	   mkdir("tests/imgs")
@@ -12,14 +14,13 @@ function run_test(id::AbstractString,file1::AbstractString, file2::AbstractStrin
 	   mkdir("tests/imgs/fixed")
 	end
 
-    data = zeros(30,4)
-    data_size = length(data[:,1])
+    data = zeros(reps,4)
 
     # Redis connection
     c = RedisConnection(host="localhost",port=6379)
 
     # Steps 1,2,3
-    for i in 1:data_size                                            # 1 to number of lines
+    for i in 1:reps
         println("########## $id: fixed n $i")
         t = ZoomScript.view(file1,file2,file3,"tests/imgs/fixed/$id-$i.png")          # view() returns 3 values: step 1, 2, 3 elapsed time
         for j in 1:3
@@ -29,7 +30,7 @@ function run_test(id::AbstractString,file1::AbstractString, file2::AbstractStrin
     end
 
     # Step 3 (random)
-    for i in 1:data_size
+    for i in 1:reps
         println("########## $id: random n $i")
         t = ZoomScript.view(file1,file2,file3,"tests/imgs/random/$id-$i.png",random=true)
         data[i,4] = t[3]
@@ -77,8 +78,8 @@ function run_test(id::AbstractString,file1::AbstractString, file2::AbstractStrin
 
 end
 
-run_test("A0","ChiVol_29304_14054_007_140429_L090HH_CX_01.slc","ChiVol_29304_14054_007_140429_L090VH_CX_01.slc","ChiVol_29304_14054_007_140429_L090VV_CX_01.slc")
+#run_test("A0","ChiVol_29304_14054_007_140429_L090HH_CX_01.slc","ChiVol_29304_14054_007_140429_L090VH_CX_01.slc","ChiVol_29304_14054_007_140429_L090VV_CX_01.slc")
 
-for i in 1:6
+for i in 5:6
     run_test("A$i","A$i-HHHH.slc","A$i-HVHV.slc","A$i-VVVV.slc")
 end

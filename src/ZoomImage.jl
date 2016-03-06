@@ -72,6 +72,6 @@ function ZoomImage(start, windowHeight, windowWidth, zoomHeight, zoomWidth, sour
         skip(connection, skipAux)
     end
 
-    return(imageVector)
+	imageVector
 
 end
