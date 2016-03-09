@@ -4,7 +4,7 @@ function PauliLocal(mHH, mHV, mVV, height, widht)
 
 	pauliG = abs(mVV - mHH)
 
-  pauliB = 2*mHV
+  	pauliB = 2*mHV
 
 	pauliReq = ecdf(pauliR)(pauliR)
 	pauliGeq = ecdf(pauliG)(pauliG)
